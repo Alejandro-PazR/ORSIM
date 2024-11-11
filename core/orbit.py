@@ -110,10 +110,6 @@ class Orbit(OrbitCreation):
 		if method in METHODS:
 			method = METHODS[method]
 
-		print(73*'=')
-		print(f"Orbit propagation at {self._epoch}")
-		print(73*'-')
-
 		start = time.perf_counter()
 		solution = method.propagate(self._sc, self._sv, self._epoch, tStop, self._perturbations)
 		end = time.perf_counter()
@@ -133,22 +129,29 @@ class Orbit(OrbitCreation):
 		new = self._epoch.date + timedelta(seconds=self.sol.t[-1])
 		new_epoch = Epoch(new.year, new.month, new.day, new.hour, new.minute, new.second + new.microsecond*1e-6)
 
+		line_length: int = 73
+		num_spaces: int = 14
+
 		messages = [
 			f"Integration time (sec): {(end-start):.6f}",
 			f"Final epoch: {new_epoch.date.strftime('%d-%B-%Y, %H:%M:%S')} UTC",
-			f"Final position (km): [{final.position.x:.9f}, {final.position.y:.9f}, {final.position.z:.9f}]",
-			f"Final velocity (km/s): [{final.velocity.x:.9f}, {final.velocity.y:.9f}, {final.velocity.z:.9f}]",
+			f"Final position (km): [{final.position.x:.6f}, {final.position.y:.6f}, {final.position.z:.6f}]",
+			f"Final velocity (km/s): [{final.velocity.x:.6f}, {final.velocity.y:.6f}, {final.velocity.z:.6f}]",
 			"Final elements:",
-			f"\t  SMA (km): {final.sma}",
-			f"\t       ECC: {final.ecc}",
-			f"\t INC (deg): {np.degrees(final.inc)%180}",
-			f"\tRAAN (deg): {np.degrees(final.raan)%360}",
-			f"\t AOP (deg): {np.degrees(final.aop)%360}",
-			f"\t  TA (deg): {np.degrees(final.ta)%360}",
+			f"{'SMA (km)':>{num_spaces}}: {final.sma:.6f}",
+			f"{'ECC':>{num_spaces}}: {final.ecc:.6f}",
+			f"{'INC (deg)':>{num_spaces}}: {np.degrees(final.inc)%180:.6f}",
+			f"{'RAAN (deg)':>{num_spaces}}: {np.degrees(final.raan)%360:.6f}",
+			f"{'AOP (deg)':>{num_spaces}}: {np.degrees(final.aop)%360:.6f}",
+			f"{'TA (deg)':>{num_spaces}}: {np.degrees(final.ta)%360:.6f}",
 		]
 
-		print(*messages[0:], sep = "\n")
-		print(73*'=')
+		print(line_length*'=')
+		print(f"{'Orbit propagation at ' + str(self._epoch):^{line_length}}")
+		print(line_length*'-')
+
+		print(*messages[0:], sep = '\n')
+		print(line_length*'=', end = '\n\n')
 		
 		return self.sol
 	
